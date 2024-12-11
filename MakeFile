@@ -1,0 +1,29 @@
+CXX = g++
+CXXFLAGS = -std=c++17 -Iinclude -Iinclude/nlohmann
+LDFLAGS = -L"C:/msys64/mingw64/lib" -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+
+# Agregar la ruta de "include" en el CXXFLAGS para las cabeceras
+SRC_FILES = $(wildcard src/**/*.cpp src/*.cpp)
+OBJ_FILES = $(SRC_FILES:src/%.cpp=src/%.o)
+
+# Regla por defecto: crear "main"
+all: main
+
+# Cómo compilar el ejecutable principal
+main: $(OBJ_FILES)
+	$(CXX) $(CXXFLAGS) -o main $(OBJ_FILES) $(LDFLAGS)
+
+# Cómo compilar los archivos .cpp a archivos .o
+src/%.o: src/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Regla para limpiar los archivos generados
+clean:
+ifeq ($(OS),Windows_NT)
+	del /F /Q $(subst /,\,$(OBJ_FILES)) main
+else
+	rm -f $(OBJ_FILES) main
+endif
+
+# Para evitar que 'make' intente hacer algo con 'clean' o 'all'
+.PHONY: all clean
